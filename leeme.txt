@@ -1,0 +1,7 @@
+git clone https://github.com/jmangarret/productos-yii-vuejs.git
+
+composer require yiisoft/yii
+
+vendor/bin/yiic webapp .
+
+php -S localhost:8000
