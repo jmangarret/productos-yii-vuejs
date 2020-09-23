@@ -1,7 +1,13 @@
 git clone https://github.com/jmangarret/productos-yii-vuejs.git
 
-composer require yiisoft/yii
+composer install && composer update
 
-vendor/bin/yiic webapp .
+cd protected
 
+./yiic migrate
+
+-- Correr webservice yii
 php -S localhost:8000
+
+-- Ingresar al front vue
+localhost:8000/public

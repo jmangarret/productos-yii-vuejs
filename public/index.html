@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.min.css">  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+  <div id="app">
+    <v-app>
+      <v-main>      
+        <v-card class="mx-auto mt-5" max-width="1200">
+          <!-- Botón CREAR -->
+          <div class="text-right">
+            <v-btn color="primary white--text" @click="newRecord()">Nuevo Producto</v-btn>    
+          </div>
+          <!-- Tabla y formulario -->
+          <v-simple-table class="mt-5">
+            <template v-slot:default>
+              <thead>
+                <tr class="light-blue darken-2">
+                  <th class="white--text">ID</th>
+                  <th class="white--text">DESCRIPCIÓN</th>
+                  <th class="white--text">REFERENCIA</th>
+                  <th class="white--text">MONEDA</th>
+                  <th class="white--text">PRECIO</th>
+                  <th class="white--text">STOCK</th>
+                  <th class="white--text text-center">ACCIONES</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="product in products" :key="product.id">
+                  <td>{{ product.id }}</td>
+                  <td>{{ product.description }}</td>
+                  <td>{{ product.reference }}</td>
+                  <td>{{ product.currency }}</td>
+                  <td>{{ product.price }}</td>
+                  <td>{{ product.stock }}</td>
+                  <td>
+                    <v-btn class="primary" dark @click="showRecord(product.id)" title="Detalles del Producto">
+                      <span class="mdi mdi-eye"></span>
+                    </v-btn>
+          
+                    <v-btn class="teal accent-4" dark
+                      @click="editRecord(product.id, product.description, product.reference, product.currency, product.price, product.stock)"
+                      title="Editar Producto">
+                      <span class="mdi mdi-pencil"></span>
+                    </v-btn>
+          
+                    <v-btn class="error" dark @click="deleteRecord(product.id)" title="Eliminar Producto">
+                      <span class="mdi mdi-delete"></span>
+                    </v-btn>
+          
+                  </td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+          
+        </v-card>        
+        <!-- Componente de Diálogo para CREAR y EDITAR -->
+        <v-dialog v-model="dialog" max-width="500">
+          <v-card>
+            <v-card-title class="blue darken-1 white--text">Producto</v-card-title>
+            <v-card-text>
+              <v-form>
+                <v-container>
+                  <v-row>
+                    <input v-model="product.id" hidden></input>
+                    <v-col cols="12" md="12">
+                      <v-text-field v-model="product.description" label="Descripción" solo required>{{product.description}}
+                      </v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-text-field v-model="product.reference" label="Referencia" solo required>{{product.reference}}
+                      </v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-text-field v-model="product.stock" label="Stock" type="number" solo required></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-select v-model="product.currency" :items="currencies" label="Moneda" solo></v-select>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-text-field v-model="product.price" label="Precio" type="number" prefix="$" solo required>
+                      </v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn @click="dialog=false">Cancelar</v-btn>
+              <v-btn @click="saveRecord()" type="submit" color="blue" dark>Enviar</v-btn>
+            </v-card-actions>
+            </v-form>
+          </v-card>
+        </v-dialog>
+
+        <!-- Componente de Diálogo para MOSTRAR -->
+        <v-dialog v-model="dialog2" max-width="500">
+          <v-card>
+            <v-card-title class="blue darken-1 white--text">Producto</v-card-title>
+            <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12" md="12">
+                      <span class="font-weight-bold">Descripción:</span>
+                      {{product.description}}
+                    </v-col>
+                    <v-col cols="12" md="12">
+                      <span class="font-weight-bold">Referencia:</span>
+                      {{product.reference}}
+                    </v-col>
+                    <v-col cols="12" md="12">
+                      <span class="font-weight-bold">Stock:</span>
+                      {{product.stock}}
+                    </v-col>
+                    <v-col cols="12" md="12">
+                      <span class="font-weight-bold">Moneda:</span>
+                      {{product.currency}}
+                    </v-col>
+                    <v-col cols="12" md="12">
+                      <span class="font-weight-bold">Precio:</span>
+                      {{product.price}}
+                    </v-col>
+                  </v-row>
+                </v-container>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
+
+      </v-main>
+    </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js" integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg==" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.all.min.js"></script>
+
+  <script src="../public/js/app.js"></script>
+</body>
+</html> 
